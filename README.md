@@ -1,9 +1,18 @@
-# QRB Image Resize ROS Node
-qrb_ros_image_resize provide a ROS Node that enables input image downscaling using EVA acceleration.
+<div align="center">
+  <h1>QRB ROS Image Resize</h1>
+  <p align="center">
+    <img src="https://s7d1.scene7.com/is/image/dmqualcommprod/rb3gen2-dev-kits-hero-7" alt="Qualcomm QRB ROS" title="Qualcomm QRB ROS" />
+  </p>
+  <p>ROS Packages for Image Resize on Qualcomm Robotics Platforms</p>
+  <a href="https://ubuntu.com/download/qualcomm-iot" target="_blank"><img src="https://img.shields.io/badge/Qualcomm%20Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white" alt="Qualcomm Ubuntu"></a>
+  <a href="https://docs.ros.org/en/jazzy/" target="_blank"><img src="https://img.shields.io/badge/ROS%20Jazzy-1c428a?style=for-the-badge&logo=ros&logoColor=white" alt="Jazzy"></a>
+</div>
 
-## Overview
+---
 
-Qualcomm's smart devices, use NV12 as the default image color space format. To embrace open source and facilitate developers in NV12 image to downscaling, we have developed the image resize ROS node that support EVA acceleration. The feature as follows:
+## 👋 Overview
+
+Qualcomm smart devices use NV12 as the default image color space format. To support open-source development and simplify NV12 image downscaling for developers, we have created an image resize ROS node with EVA hardware acceleration. The feature as follows:
 
 - Provide ROS node include
   - API to downscale nv12 image.
@@ -31,7 +40,104 @@ Qualcomm's smart devices, use NV12 as the default image color space format. To e
 - Input / output image receive/send with QRB ROS transport.
 - Hardware accelerates with EVA.
 
-## Build
+## ⚓ APIs
+
+### 🔹 `qrb_ros_image_resize` APIs
+
+#### ROS interfaces
+
+<table>
+  <tr>
+    <th>Interface</th>
+    <th>Name</th>
+    <th>Type</th>
+    <td>Description</td>
+  </tr>
+  <tr>
+    <td>Subscription</td>
+    <td>/image_raw</td>
+    <td>qrb_ros/transport/type/Image</td>
+    <td>output image</td>
+  </tr>
+  <tr>
+    <td>Publisher</td>
+    <td>/image_resize</td>
+    <td>qrb_ros/transport/type/Image</td>
+    <td>output image</td>
+  </tr>
+</table>
+
+#### ROS parameters
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Type</th>
+    <th>Description</td>
+    <th>Default Value</td>
+  </tr>
+  <tr>
+    <td>interpolation</td>
+    <td>int32</td>
+    <td>Interpolation methods</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td>use_scale</td>
+    <td>uint32</td>
+    <td>whether enable downscale ratio</td>
+    <td>false</td>
+  </tr>
+  <tr>
+    <td>height_scale</td>
+    <td>uint32</td>
+    <td>Height downscale ratio of the output</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>width_scale</td>
+    <td>uint32</td>
+    <td>Width downscale ratio of the output</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>height</td>
+    <td>uint32</td>
+    <td>Height of the output</td>
+    <td>-1</td>
+  </tr>
+  <tr>
+    <td>width</td>
+    <td>uint32</td>
+    <td>Width of the output</td>
+    <td>-1</td>
+  </tr>
+</table>
+
+## 🎯 Supported Targets
+
+<table >
+  <tr>
+    <th>Development Hardware</th>
+    <td>Qualcomm Dragonwing™ RB5 Gen2</td>
+  </tr>
+  <tr>
+    <th>Hardware Overview</th>
+    <th><a href="https://www.qualcomm.com/developer/hardware/rb3-gen-2-development-kit"><img src="https://s7d1.scene7.com/is/image/dmqualcommprod/rb3-gen2-carousel?fmt=webp-alpha&qlt=85" width="180"/></a></th>
+  </tr>
+  <tr>
+    <th>MIPI-CSI Camera Support</th>
+    <td><li>IMX577(12MP)</li><li>OV9282(1MP)</li><li>IMX586 (48MP)</li><li>IMX686 (64MP)</li></td>
+  </tr>
+  <tr>
+    <th>GMSL Camera Support</th>
+    <td>Leopard Imaging AR0231 GMSL2</td>
+  </tr>
+</table>
+
+---
+
+## 👨‍💻 Build from Source (based on RB5Gen2 LU Ubuntu 22.04)
 
 Currently, we only support NV12 color space format downscale that based on Qualcomm platform that support EVA acceleration.
 
@@ -110,24 +216,25 @@ def generate_launch_description():
     )])
 ```
 
-## Acceleration 
+## 🤝 Contributing
 
-The image resize downscale process accelerate by EVA.
+We love community contributions! Get started by reading our [CONTRIBUTING.md](CONTRIBUTING.md).
+Feel free to create an issue for bug reports, feature requests, or any discussion 💡.
 
-## Packages
+## ❤️ Contributors (Optional)
 
-Will update in the future.
+Thanks to all our contributors who have helped make this project better!
 
-## Resources
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/quic-zhanlin"><img src="https://avatars.githubusercontent.com/u/174774501?v=4" width="100" height="100" alt="quic-zhanlin"/><br /><sub><b>quic-shouhu</b></sub></a></td>
+  </tr>
+</table>
 
-- [ROS2 Type Adaption](https://ros.org/reps/rep-2007.html)
+## ❔ FAQs (Optional)
 
-## Contributions
+> 📌 Include common and popular questions and answers
 
-Thanks for your interest in contributing to qrb_image_resize_lib! Please read our [Contributions Page](CONTRIBUTING.md) for more information on contributing features or bug fixes. We look forward to your participation!
+## 📜 License
 
-## License
-
-qrb_image_resize_lib is licensed under the BSD-3-clause "New" or "Revised" License. 
-
-Check out the [LICENSE](LICENSE) for more details.
+Project is licensed under the [BSD-3-Clause](https://spdx.org/licenses/BSD-3-Clause.html) License. See [LICENSE](./LICENSE) for the full license text.
