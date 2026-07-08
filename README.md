@@ -1,7 +1,6 @@
 <div align="center">
   <h1>QRB ROS Image Resize</h1>
   <p align="center">
-    <img src="https://s7d1.scene7.com/is/image/dmqualcommprod/rb3gen2-dev-kits-hero-7" alt="Qualcomm QRB ROS" title="Qualcomm QRB ROS" />
   </p>
   <p>ROS Packages for Image Resize on Qualcomm Robotics Platforms</p>
   <a href="https://ubuntu.com/download/qualcomm-iot" target="_blank"><img src="https://img.shields.io/badge/Qualcomm%20Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white" alt="Qualcomm Ubuntu"></a>
@@ -32,8 +31,6 @@ Qualcomm smart devices use NV12 as the default image color space format. To supp
     - 0: EVA_SCALEDOWN_BILINEAR
     - 1: EVA_SCALEDOWN_BICUBIC
   - Since OpenCV does not support nv12 images to resize, and must convert NV12 to RGB format, which will result in color loss.
-    - example: RB3 Gen2 was not support EVA hard ware, it just use opemcv to resize, which will result in color loss.
-    - ps: RB3 Gen2 was not support EVA hardware.
 
 - Support dmabuf fd as input / output.
 
@@ -119,11 +116,9 @@ Qualcomm smart devices use NV12 as the default image color space format. To supp
 <table >
   <tr>
     <th>Development Hardware</th>
-    <td>Qualcomm Dragonwing™ RB5 Gen2</td>
   </tr>
   <tr>
     <th>Hardware Overview</th>
-    <th><a href="https://www.qualcomm.com/developer/hardware/rb3-gen-2-development-kit"><img src="https://s7d1.scene7.com/is/image/dmqualcommprod/rb3-gen2-carousel?fmt=webp-alpha&qlt=85" width="180"/></a></th>
   </tr>
   <tr>
     <th>MIPI-CSI Camera Support</th>
@@ -137,7 +132,7 @@ Qualcomm smart devices use NV12 as the default image color space format. To supp
 
 ---
 
-## 👨‍💻 Build from Source (based on RB5Gen2 LU Ubuntu 22.04)
+## 👨‍💻 Build from Source
 
 Currently, we only support NV12 color space format downscale that based on Qualcomm platform that support EVA acceleration.
 
