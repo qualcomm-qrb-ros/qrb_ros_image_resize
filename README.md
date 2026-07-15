@@ -11,6 +11,8 @@
 
 ## 👋 Overview
 
+
+
 Qualcomm smart devices use NV12 as the default image color space format. To support open-source development and simplify NV12 image downscaling for developers, we have created an image resize ROS node with EVA hardware acceleration. The feature as follows:
 
 - Provide ROS node include
@@ -150,7 +152,7 @@ Currently, we only support NV12 color space format downscale that based on Qualc
      ```bash
      export AMENT_PREFIX_PATH="${OECORE_TARGET_SYSROOT}/usr;${OECORE_NATIVE_SYSROOT}/usr"
      export PYTHONPATH=${PYTHONPATH}:${OECORE_TARGET_SYSROOT}/usr/lib/python3.10/site-packages
-
+     
      colcon build --merge-install --cmake-args \
        -DPython3_ROOT_DIR=${OECORE_TARGET_SYSROOT}/usr \
        -DPython3_NumPy_INCLUDE_DIR=${OECORE_TARGET_SYSROOT}/usr/lib/python3.10/site-packages/numpy/core/include \
