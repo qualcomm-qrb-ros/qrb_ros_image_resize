@@ -1,47 +1,50 @@
 <div align="center">
-  <h1>QRB ROS Image Resize</h1>
+  <h1>QRB ROS Battery</h1>
   <p align="center">
   </p>
-  <p>ROS Packages for Image Resize on Qualcomm Robotics Platforms</p>
+  <p>ROS Packages for Battery State on Qualcomm Robotics Platforms</p>
+
   <a href="https://ubuntu.com/download/qualcomm-iot" target="_blank"><img src="https://img.shields.io/badge/Qualcomm%20Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white" alt="Qualcomm Ubuntu"></a>
   <a href="https://docs.ros.org/en/jazzy/" target="_blank"><img src="https://img.shields.io/badge/ROS%20Jazzy-1c428a?style=for-the-badge&logo=ros&logoColor=white" alt="Jazzy"></a>
+
 </div>
+
+> [!NOTE]
+> This repository is currently migrating to ROS 2 Lyrical. Documentation may still reference Jazzy, and some features may not be fully supported yet.
+
 
 ---
 
 ## 👋 Overview
 
-Qualcomm smart devices use NV12 as the default image color space format. To support open-source development and simplify NV12 image downscaling for developers, we have created an image resize ROS node with EVA hardware acceleration. The feature as follows:
+The [QRB ROS Battery](https://github.com/qualcomm-qrb-ros/qrb_ros_battery) is a ROS package that publishes battery state data from system node.
 
-- Provide ROS node include
-  - API to downscale nv12 image.
+<div align="center">
+  <img src="./docs/assets/architecture.png" alt="architecture">
+</div>
 
-- limitation
-  - Supprots input nv12 image and outputs downsized nv12 image.
-  - Supports a maximum input image size of 3840 x 2160.
-    - 0 < input_width ≤ 3840.
-    - 0 < input_height ≤ 2160.
-  - Supports a maximum downscale ratio of 1/8.
-    -  1/8 input_width ≤ output_width ≤ input_width.
-    -  1/8 input_ height ≤ output_ height ≤ input_ height.
-  - Supports a minimum output image size of 64 x 64.
-    - 64 ≤ output_width ≤ input_width.
-    - 64 ≤ output_height ≤ input_height.
-  - Supports interpolation methods are EVA_SCALEDOWN_BILINEAR and EVA_SCALEDOWN_BICUBIC.
-    - 0: EVA_SCALEDOWN_BILINEAR
-    - 1: EVA_SCALEDOWN_BICUBIC
-  - Since OpenCV does not support nv12 images to resize, and must convert NV12 to RGB format, which will result in color loss.
+<br>
 
-- Support dmabuf fd as input / output.
+The [`qrb_ros_battery`](https://github.com/qualcomm-qrb-ros/qrb_ros_battery/tree/main/qrb_ros_battery) is a ROS 2 package. It creates a publisher to publish battery state data from system node.
 
-- Input / output image receive/send with QRB ROS transport.
-- Hardware accelerates with EVA.
+The [`qrb_battery_client`](https://github.com/qualcomm-qrb-ros/qrb_ros_battery/tree/main/qrb_battery_client) is a C++ library, it provides APIs to `qrb_ros_battery` for querying battery state data from lower layer `Battery Service`.
+
+The `Battery Service` is a background service designed to provide APIs for client-side access and get battery state data.
+
+## 🔎 Table of contents
+- [APIs](#-apis)
+- [Supported targets](#-supported-targets)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Build from source](#-build-from-source)
+- [Contributing](#-contributing)
+- [Contributors](#️-contributors)
+- [FAQs](#-faqs)
+- [License](#-license)
 
 ## ⚓ APIs
 
-### 🔹 `qrb_ros_image_resize` APIs
-
-#### ROS interfaces
+### 🔹 `qrb_ros_battery` APIs
 
 <table>
   <tr>
@@ -51,67 +54,41 @@ Qualcomm smart devices use NV12 as the default image color space format. To supp
     <td>Description</td>
   </tr>
   <tr>
-    <td>Subscription</td>
-    <td>/image_raw</td>
-    <td>qrb_ros/transport/type/Image</td>
-    <td>output image</td>
-  </tr>
-  <tr>
     <td>Publisher</td>
-    <td>/image_resize</td>
-    <td>qrb_ros/transport/type/Image</td>
-    <td>output image</td>
+    <td>/battery_stats</td>
+    <td>sensor_msgs/msg/BatteryState</td>
+    <td>output battery status data</td>
   </tr>
 </table>
 
-#### ROS parameters
+### 🔹 `qrb_battery_client` APIs
 
 <table>
   <tr>
-    <th>Name</th>
-    <th>Type</th>
-    <th>Description</td>
-    <th>Default Value</td>
+    <th>Function</th>
+    <th>Parameters</th>
+    <th>Description</th>
   </tr>
   <tr>
-    <td>interpolation</td>
-    <td>int32</td>
-    <td>Interpolation methods</td>
-    <td>0</td>
+    <td>bool init_connection()</td>
+    <td>Empty</td>
+    <td>Connect with battery service, return <b>true</b> means init successfully.</td>
   </tr>
   <tr>
-    <td>use_scale</td>
-    <td>uint32</td>
-    <td>whether enable downscale ratio</td>
-    <td>false</td>
+    <td>void close_connection()</td>
+    <td>Empty</td>
+    <td>Disconnect with battery service.</td>
   </tr>
   <tr>
-    <td>height_scale</td>
-    <td>uint32</td>
-    <td>Height downscale ratio of the output</td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>width_scale</td>
-    <td>uint32</td>
-    <td>Width downscale ratio of the output</td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>height</td>
-    <td>uint32</td>
-    <td>Height of the output</td>
-    <td>-1</td>
-  </tr>
-  <tr>
-    <td>width</td>
-    <td>uint32</td>
-    <td>Width of the output</td>
-    <td>-1</td>
+    <td>bool get_battery_stats(std::unique_ptr<std::string> & msg)</td>
+    <td>
+      <b>msg</b>: Pointer to battery status info
+    </td>
+    <td>Get battery status. Returns <b>true</b> if successful. If <b>true</b>, <b>msg</b> will point to the latest battery info.</td>
   </tr>
 </table>
 
-## 🎯 Supported Targets
+## 🎯 Supported targets
 
 <table >
   <tr>
@@ -120,115 +97,134 @@ Qualcomm smart devices use NV12 as the default image color space format. To supp
   <tr>
     <th>Hardware Overview</th>
   </tr>
-  <tr>
-    <th>MIPI-CSI Camera Support</th>
-    <td><li>IMX577(12MP)</li><li>OV9282(1MP)</li><li>IMX586 (48MP)</li><li>IMX686 (64MP)</li></td>
-  </tr>
-  <tr>
-    <th>GMSL Camera Support</th>
-    <td>Leopard Imaging AR0231 GMSL2</td>
-  </tr>
 </table>
 
 ---
 
-## 👨‍💻 Build from Source
+## ✨ Installation
 
-Currently, we only support NV12 color space format downscale that based on Qualcomm platform that support EVA acceleration.
+> [!IMPORTANT]
+> **PREREQUISITES**: The following steps need to be run on **Qualcomm Ubuntu** and **ROS Jazzy**.<br>
+> Reference [Install Ubuntu on Qualcomm IoT Platforms](https://ubuntu.com/download/qualcomm-iot) and [Install ROS Jazzy](https://docs.ros.org/en/jazzy/index.html) to setup environment. <br>
+> For Qualcomm Linux, please check out the [Qualcomm Intelligent Robotics Product SDK](https://docs.qualcomm.com/bundle/publicresource/topics/80-70018-265/introduction_1.html?vproduct=1601111740013072&version=1.4&facet=Qualcomm%20Intelligent%20Robotics%20Product%20(QIRP)%20SDK) documents.
 
-1. Setup environments follow this document 's [Set up the cross-compile environment.](https://docs.qualcomm.com/bundle/publicresource/topics/80-65220-2/develop-your-first-application_6.html?product=1601111740013072&facet=Qualcomm%20Intelligent%20Robotics%20(QIRP)%20Product%20SDK&state=releasecandidate) part
-
-2. Create `ros_ws` directory in `<qirp_decompressed_workspace>/qirp-sdk/`
-
-3. Clone this repository under `<qirp_decompressed_workspace>/qirp-sdk/ros_ws`
-     ```bash
-     git clone https://github.com/qualcomm-qrb-ros/lib_mem_dmabuf.git
-     git clone https://github.com/qualcomm-qrb-ros/qrb_ros_transport.git
-     git clone https://github.com/qualcomm-qrb-ros/qrb_ros_image_resize.git
-     ```
-4. Build this project
-     ```bash
-     export AMENT_PREFIX_PATH="${OECORE_TARGET_SYSROOT}/usr;${OECORE_NATIVE_SYSROOT}/usr"
-     export PYTHONPATH=${PYTHONPATH}:${OECORE_TARGET_SYSROOT}/usr/lib/python3.10/site-packages
-
-     colcon build --merge-install --cmake-args \
-       -DPython3_ROOT_DIR=${OECORE_TARGET_SYSROOT}/usr \
-       -DPython3_NumPy_INCLUDE_DIR=${OECORE_TARGET_SYSROOT}/usr/lib/python3.10/site-packages/numpy/core/include \
-       -DPYTHON_SOABI=cpython-310-aarch64-linux-gnu -DCMAKE_STAGING_PREFIX=$(pwd)/install \
-       -DCMAKE_PREFIX_PATH=$(pwd)/install/share \
-       -DBUILD_TESTING=OFF --continue-on-error
-     ```
-5. Push to the device & Install
-     ```bash
-     cd `<qirp_decompressed_workspace>/qirp-sdk/ros_ws/install`
-     tar czvf qrb_ros_image_resize.tar.gz lib share
-     scp qrb_ros_image_resize.tar.gz root@[ip-addr]:/opt/
-     ssh root@[ip-addr]
-     (ssh) tar -zxf /opt/qrb_ros_image_resize.tar.gz -C /opt/qcom/qirp-sdk/usr/
-     ```
-## Run
-
-- Source this file to set up the environment on your device:
+Add Qualcomm IOT PPA for Ubuntu:
 
 ```bash
-ssh root@[ip-addr]
-(ssh) export XDG_RUNTIME_DIR=/dev/socket/weston/
-(ssh) export WAYLAND_DISPLAY=wayland-1
-(ssh) export HOME=/opt
-(ssh) source /opt/qcom/qirp-sdk/qirp-setup.sh
-(ssh) export ROS_DOMAIN_ID=99
-(ssh) source /usr/bin/ros_setup.bash
-
+sudo add-apt-repository ppa:ubuntu-qcom-iot/qcom-ppa
+sudo add-apt-repository ppa:ubuntu-qcom-iot/qirp
+sudo apt update
 ```
 
-Run the ROS2 package.
+Install Debian package:
 
-```
-(ssh) ros2 launch qrb_ros_image_resize qti_image_resize.launch.py
+```bash
+sudo apt install ros-jazzy-qrb-ros-battery qcom-battery-service
 ```
 
-- You can modify the qti_image_resize.launch.py to set the resize.
+## 🚀 Usage
 
-```python
-def generate_launch_description():
-    return LaunchDescription([ComposableNodeContainer(
-        name='resize_container',
-        namespace='container',
-        package='rclcpp_components',
-        executable='component_container',
-        composable_node_descriptions=[
-            ComposableNode(
-                package='qrb_ros_image_resize',
-                plugin='qrb_ros::resize::ResizeNode',
-                name='resize_1',
-                parameters=[{
-                    'use_scale': False,
-                    'height': 400,
-                    'width': 400,
-                }],
-            ),
-        ]
-    )])
+### Start the battery node
+
+```bash
+source /opt/ros/jazzy/setup.bash
+ros2 run qrb_ros_battery battery_node
 ```
+The output for these commands:
+
+```bash
+[INFO] [1756720182.917875184] [battery_stats_publisher]: Started Battery Node
+...
+```
+
+Then you can check ROS topics with the topic `/battery_stats`.
+
+```bash
+ros2 topic list
+/battery_stats
+```
+
+### The output of the topic
+
+Here just a example for the topic output.
+
+```bash
+header:
+  stamp:
+      sec: 1756810050
+      nanosec: 208103261
+  frame_id: battery_stats
+voltage: 4259866.0
+temperature: 250.0
+current: -134584.0
+charge: 3360600.0
+capacity: 100.0
+design_capacity: -1.0
+percentage: 100.0
+power_supply_status: 2
+power_supply_health: 1
+power_supply_technology: 2
+present: true
+cell_voltage:
+- 4259866.0
+cell_temperature:
+- 250.0
+location: battery_stats
+serial_number: battery_stats
+```
+
+---
+
+## 👨‍💻 Build from source
+
+### Dependencies
+Install dependencies `ros-dev-tools`:
+
+```bash
+sudo add-apt-repository ppa:ubuntu-qcom-iot/qcom-ppa
+sudo add-apt-repository ppa:ubuntu-qcom-iot/qirp
+sudo apt update
+
+sudo apt install qcom-battery-service \
+  libdbus-1-dev \
+  ros-dev-tools \
+```
+
+### Build
+Download the source code and build with colcon
+
+```bash
+source /opt/ros/jazzy/setup.bash
+git clone https://github.com/qualcomm-qrb-ros/qrb_ros_battery.git
+colcon build
+```
+
 
 ## 🤝 Contributing
 
-We love community contributions! Get started by reading our [CONTRIBUTING.md](CONTRIBUTING.md).
-Feel free to create an issue for bug reports, feature requests, or any discussion 💡.
+We love community contributions! Get started by reading our [CONTRIBUTING.md](CONTRIBUTING.md).<br>
+Feel free to create an issue for bug report, feature requests or any discussion💡.
 
-## ❤️ Contributors (Optional)
+## ❤️ Contributors
 
 Thanks to all our contributors who have helped make this project better!
 
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/quic-zhanlin"><img src="https://avatars.githubusercontent.com/u/174774501?v=4" width="100" height="100" alt="quic-zhanlin"/><br /><sub><b>quic-shouhu</b></sub></a></td>
+    <td align="center"><a href="https://github.com/quic-zhanlin"><img src="https://avatars.githubusercontent.com/u/88314584?v=4" width="100" height="100" alt="quic-zhanlin"/><br /><sub><b>quic-zhanlin</b></sub></a></td>
+    <td align="center"><a href="https://github.com/jiaxshi"><img src="https://avatars.githubusercontent.com/u/147487233?v=4" width="100" height="100" alt="jiaxshi"/><br /><sub><b>jiaxshi</b></sub></a></td>
+    <td align="center"><a href="https://github.com/PadmanabhaKavasseri"><img src="https://avatars.githubusercontent.com/u/45885303?v=4" width="100" height="100" alt="Padmanabha Kavasseri"/><br /><sub><b>Padmanabha Kavasseri</b></sub></a></td>
   </tr>
 </table>
 
-## ❔ FAQs (Optional)
+## ❔ FAQs
 
-> 📌 Include common and popular questions and answers
+<details>
+<summary><strong>Why do I see the battery ros node exit with `invalid_argument` error?</strong></summary>
+
+- Please ensure that the battery service is running.
+</details>
+
 
 ## 📜 License
 
